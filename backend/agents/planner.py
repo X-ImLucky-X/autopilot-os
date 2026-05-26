@@ -1,9 +1,4 @@
-import google.generativeai as genai
-from config import GEMINI_API_KEY
-
-genai.configure(api_key=GEMINI_API_KEY)
-
-model = genai.GenerativeModel("gemini-2.5-flash")
+from ollama_client import generate_response
 
 
 def generate_plan(task: str):
@@ -16,9 +11,7 @@ def generate_plan(task: str):
     Task:
     {task}
 
-    Return steps in numbered format.
+    Return concise numbered steps.
     """
 
-    response = model.generate_content(prompt)
-
-    return response.text
+    return generate_response(prompt)

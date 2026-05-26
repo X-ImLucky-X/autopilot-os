@@ -12,21 +12,26 @@ def search_web(query: str):
 
         page = browser.new_page()
 
-        # Open DuckDuckGo
         page.goto("https://duckduckgo.com")
 
-        # Fill search
         page.fill('input[name="q"]', query)
 
-        # Press enter
         page.keyboard.press("Enter")
 
-        # Wait until results load
         page.wait_for_load_state("networkidle")
 
-        # Extract page text
-        content = page.locator("body").inner_text()
+        results = page.locator('[data-testid="result"]')
+
+        extracted_text = ""
+
+        count = min(results.count(), 5)
+
+        for i in range(count):
+
+            result = results.nth(i)
+
+            extracted_text += result.inner_text() + "\n\n"
 
         browser.close()
 
-        return content
+        return extracted_text
