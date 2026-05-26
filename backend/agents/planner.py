@@ -7,6 +7,7 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 
 
 def generate_plan(task: str):
+
     prompt = f"""
     You are an AI planning agent.
 

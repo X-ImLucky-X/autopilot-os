@@ -8,18 +8,24 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 
 def summarize_content(content: str):
 
-    prompt = f"""
-    Summarize the following web search results.
+    try:
 
-    Keep it:
-    - short
-    - informative
-    - readable
+        prompt = f"""
+        Summarize the following web search results.
 
-    Content:
-    {content[:4000]}
-    """
+        Keep it:
+        - short
+        - informative
+        - readable
 
-    response = model.generate_content(prompt)
+        Content:
+        {content[:4000]}
+        """
 
-    return response.text
+        response = model.generate_content(prompt)
+
+        return response.text
+
+    except Exception as e:
+
+        return f"Summarization failed: {str(e)}"

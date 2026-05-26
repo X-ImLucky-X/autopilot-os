@@ -1,11 +1,18 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from workflows.graph import workflow
 
 app = FastAPI()
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 class TaskRequest(BaseModel):
     task: str
 
@@ -26,7 +33,8 @@ def run_task(request: TaskRequest):
         "task": request.task,
         "plan": "",
         "execution_result": "",
-        "summary": ""
+        "summary": "",
+        "logs": []
     })
 
     return result
