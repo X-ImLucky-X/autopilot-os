@@ -18,3 +18,11 @@ build/
 
 # OS files
 .DS_Store
+
+# Python
+venv/
+
+# Secrets
+backend/token.json
+backend/credentials.json
+
