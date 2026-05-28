@@ -1,85 +1,132 @@
-from playwright.sync_api import sync_playwright
+import requests
+import feedparser
+
+from bs4 import BeautifulSoup
 
 
 def search_web(query: str):
 
-    with sync_playwright() as p:
+    all_content = ""
 
-        browser = p.chromium.launch(
-            headless=False,
-            args=["--disable-blink-features=AutomationControlled"]
+    links = []
+
+    try:
+
+        rss_url = (
+            "https://news.google.com/rss/search?q="
+            + query.replace(" ", "+")
         )
 
-        page = browser.new_page()
+        feed = feedparser.parse(rss_url)
 
-        page.goto("https://duckduckgo.com")
+        entries = feed.entries[:5]
 
-        page.fill('input[name="q"]', query)
+        print(f"Found {len(entries)} news results")
 
-        page.keyboard.press("Enter")
-
-        page.wait_for_load_state("networkidle")
-
-        results = page.locator('[data-testid="result"]')
-
-        extracted_text = ""
-        links = []
-
-        count = min(results.count(), 3)
-
-        for i in range(count):
-
-            result = results.nth(i)
-
-            extracted_text += result.inner_text() + "\n\n"
-
+        for entry in entries:
+            
             try:
 
-                link = result.locator(
-                    "a[href^='http']"
-                ).first.get_attribute("href")
+                # Real article URL
+                link = entry.get(
+                    "source", {}
+                ).get("href")
 
-                if link and link.startswith("http"):
+                # Fallback
+                if not link:
+
+                    link = entry.link
+
+                print(f"Link Found: {link}")
+
+                if link:
 
                     links.append(link)
 
-            except:
+            except Exception as e:
 
-                pass
+                print(
+                    f"RSS parsing failed: {e}"
+                )
 
-        browser.close()
+    except Exception as e:
 
-        return {
-            "text": extracted_text,
-            "links": links
-        }
+        print(f"RSS Search Failed: {e}")
+
+    # Extract articles
+    for link in links[:3]:
+
+        article = extract_article_content(link)
+
+        if article and len(article) > 500:
+
+            all_content += (
+                f"\n\nSOURCE: {link}\n\n"
+            )
+
+            all_content += article
+
+    return {
+
+        "text": all_content,
+
+        "links": links
+    }
 
 
 def extract_article_content(url: str):
 
     try:
 
-        with sync_playwright() as p:
+        headers = {
 
-            browser = p.chromium.launch(
-                headless=True
+            "User-Agent":
+            (
+                "Mozilla/5.0 "
+                "(Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 "
+                "(KHTML, like Gecko) "
+                "Chrome/122.0.0.0 Safari/537.36"
             )
+        }
 
-            page = browser.new_page()
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=15
+        )
 
-            page.goto(
-                url,
-                timeout=30000
-            )
+        soup = BeautifulSoup(
+            response.text,
+            "html.parser"
+        )
 
-            page.wait_for_load_state("networkidle")
+        # Remove junk
+        for tag in soup([
+            "script",
+            "style",
+            "nav",
+            "footer",
+            "header",
+            "aside"
+        ]):
 
-            content = page.locator("body").inner_text()
+            tag.decompose()
 
-            browser.close()
+        text = soup.get_text(
+            separator=" "
+        )
 
-            return content[:3000]
+        text = " ".join(
+            text.split()
+        )
+
+        return text[:5000]
 
     except Exception as e:
 
-        return f"Failed to extract {url}: {str(e)}"
+        print(
+            f"Failed extracting {url}: {e}"
+        )
+
+        return ""

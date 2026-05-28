@@ -1,28 +1,72 @@
+```gitignore
+# =========================
 # Python
+# =========================
 backend/venv/
+venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Environment variables
+# =========================
+# Environment Variables
+# =========================
 .env
 
-# Node modules
-frontend/node_modules/
-
-# Build files
-dist/
-build/
-
-# VS Code
-.vscode/
-
-# OS files
-.DS_Store
-
-# Python
-venv/
-
-# Secrets
+# =========================
+# Secrets / OAuth
+# =========================
 backend/token.json
 backend/credentials.json
 
+# =========================
+# Node Modules
+# =========================
+frontend/node_modules/
+
+# =========================
+# Build Files
+# =========================
+dist/
+build/
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Cache Files
+# =========================
+.pytest_cache/
+.mypy_cache/
+
+# =========================
+# Playwright
+# =========================
+playwright-report/
+test-results/
+
+# =========================
+# Frontend Cache
+# =========================
+frontend/.vite/
+
+# =========================
+# Coverage Reports
+# =========================
+coverage/
+htmlcov/
+```

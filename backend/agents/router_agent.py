@@ -17,7 +17,7 @@ def classify_task(task: str):
     Rules:
     - DO NOT invent recipients
     - Only extract recipient if explicitly mentioned
-    - If no email address exists, recipient must be empty string ""
+    - If no email exists, recipient must be ""
     - Return ONLY JSON
     - No markdown
     - No explanations
@@ -44,9 +44,9 @@ def classify_task(task: str):
 
     {{
         "research": true,
-        "email": false,
-        "calendar": false,
-        "recipient": ""
+        "email": true,
+        "calendar": true,
+        "recipient": "john@gmail.com"
     }}
 
     User Request:
@@ -60,7 +60,6 @@ def classify_task(task: str):
 
     try:
 
-        # Extract JSON block
         json_match = re.search(
             r'\{.*\}',
             response,
@@ -75,7 +74,10 @@ def classify_task(task: str):
 
             # Safety validation
             recipient = str(
-                parsed.get("recipient", "")
+                parsed.get(
+                    "recipient",
+                    ""
+                )
             )
 
             if "@" not in recipient:
@@ -112,10 +114,13 @@ def classify_task(task: str):
             e
         )
 
-    # Safe fallback
     return {
+
         "research": True,
+
         "email": False,
+
         "calendar": False,
+
         "recipient": ""
     }
