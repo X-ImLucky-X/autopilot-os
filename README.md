@@ -469,9 +469,7 @@ __pycache__/
 
 Add your demo video link here:
 
-```text
-[demo video](https://youtu.be/MEJ_UYXizII)
-```
+[Watch Demo Video](https://youtu.be/MEJ_UYXizII)
 
 Recommended demo prompt:
 
